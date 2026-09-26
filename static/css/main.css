@@ -1,0 +1,116 @@
+:root {
+    --brand-primary: #4f46e5;
+    --brand-primary-dark: #4338ca;
+    --brand-dark: #111827;
+    --brand-gray: #6b7280;
+    --brand-bg: #f9fafb;
+    --brand-border: #e5e7eb;
+}
+
+body {
+    background-color: var(--brand-bg);
+    font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+    color: var(--brand-dark);
+}
+
+.navbar {
+    background-color: var(--brand-dark) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.auth-wrapper {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.auth-card {
+    background: #ffffff;
+    border: 1px solid var(--brand-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-card h2 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--brand-gray);
+    font-size: 0.9rem;
+    margin-bottom: 1.75rem;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--brand-dark);
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid var(--brand-border);
+    padding: 0.6rem 0.85rem;
+}
+
+.form-control:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.btn-primary {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-primary-dark);
+    border-color: var(--brand-primary-dark);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.auth-footer a {
+    color: var(--brand-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.form-text {
+    font-size: 0.8rem;
+    color: var(--brand-gray);
+}
+
+.form-text ul {
+    padding-left: 1.1rem;
+    margin-bottom: 0;
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+}
