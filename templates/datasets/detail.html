@@ -12,12 +12,38 @@
         <tr><th>Validation status</th><td>{{ dataset.get_validation_status_display }}</td></tr>
         <tr><th>Row count</th><td>{{ dataset.row_count|default:"Not yet processed" }}</td></tr>
         <tr><th>Column count</th><td>{{ dataset.column_count|default:"Not yet processed" }}</td></tr>
+        <tr><th>Data quality score</th><td>{{ dataset.data_quality_score|default:"Not yet processed" }}{% if dataset.data_quality_score %} / 100{% endif %}</td></tr>
         <tr><th>Uploaded by</th><td>{{ dataset.owner.username }}</td></tr>
         <tr><th>Uploaded at</th><td>{{ dataset.created_at }}</td></tr>
     </table>
 
     {% if dataset.processing_errors %}
         <div class="alert alert-danger">{{ dataset.processing_errors }}</div>
+    {% endif %}
+
+    {% if dataset.detected_schema %}
+        <h4 class="mt-4">Detected Columns</h4>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Type</th>
+                    <th>Missing</th>
+                    <th>Unique values</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for column in dataset.detected_schema.columns %}
+                    <tr>
+                        <td>{{ column.column }}</td>
+                        <td>{{ column.dtype }}</td>
+                        <td>{{ column.missing_count }} ({{ column.missing_percentage }}%)</td>
+                        <td>{{ column.unique_count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="text-muted small">Duplicate rows detected: {{ dataset.detected_schema.duplicate_row_count }}</p>
     {% endif %}
 
     <a href="{% url 'datasets:list' org_slug=organization.slug %}">Back to datasets</a>

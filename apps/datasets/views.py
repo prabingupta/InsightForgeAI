@@ -7,6 +7,7 @@ from django.views.generic import CreateView, DetailView, ListView
 
 from apps.datasets.forms import DatasetUploadForm
 from apps.datasets.models import Dataset
+from apps.datasets.processing import process_dataset
 from apps.organizations.models import Membership, Organization
 from apps.organizations.permissions import get_membership, require_role
 
@@ -53,6 +54,7 @@ class DatasetUploadView(LoginRequiredMixin, CreateView):
         form.instance.original_filename = uploaded_file.name
         form.instance.file_size = uploaded_file.size
         response = super().form_valid(form)
+        process_dataset(self.object)
         messages.success(self.request, f'Dataset "{self.object.name}" uploaded successfully.')
         return response
 
