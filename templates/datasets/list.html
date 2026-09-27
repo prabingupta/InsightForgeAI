@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Datasets | {{ organization.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h2 class="mb-0">Datasets: {{ organization.name }}</h2>
+    {% if membership.role == 'owner' or membership.role == 'admin' or membership.role == 'analyst' %}
+        <a href="{% url 'datasets:upload' org_slug=organization.slug %}" class="btn btn-primary">Upload Dataset</a>
+    {% endif %}
+</div>
+
+{% if datasets %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Uploaded</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dataset in datasets %}
+                <tr>
+                    <td><a href="{% url 'datasets:detail' org_slug=organization.slug pk=dataset.pk %}">{{ dataset.name }}</a></td>
+                    <td>{{ dataset.owner.username }}</td>
+                    <td>{{ dataset.get_processing_status_display }}</td>
+                    <td>{{ dataset.created_at|date:"M j, Y" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="text-muted">No datasets uploaded yet.</p>
+{% endif %}
+
+<a href="{% url 'organizations:detail' slug=organization.slug %}">Back to {{ organization.name }}</a>
+{% endblock %}

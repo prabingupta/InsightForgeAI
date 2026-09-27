@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ dataset.name }} | {{ organization.name }}{% endblock %}
+{% block content %}
+<div class="mt-4">
+    <h2>{{ dataset.name }}</h2>
+    <p class="text-muted">{{ dataset.description }}</p>
+
+    <table class="table table-sm w-auto">
+        <tr><th>Original filename</th><td>{{ dataset.original_filename }}</td></tr>
+        <tr><th>File size</th><td>{{ dataset.file_size }} bytes</td></tr>
+        <tr><th>Processing status</th><td>{{ dataset.get_processing_status_display }}</td></tr>
+        <tr><th>Validation status</th><td>{{ dataset.get_validation_status_display }}</td></tr>
+        <tr><th>Row count</th><td>{{ dataset.row_count|default:"Not yet processed" }}</td></tr>
+        <tr><th>Column count</th><td>{{ dataset.column_count|default:"Not yet processed" }}</td></tr>
+        <tr><th>Uploaded by</th><td>{{ dataset.owner.username }}</td></tr>
+        <tr><th>Uploaded at</th><td>{{ dataset.created_at }}</td></tr>
+    </table>
+
+    {% if dataset.processing_errors %}
+        <div class="alert alert-danger">{{ dataset.processing_errors }}</div>
+    {% endif %}
+
+    <a href="{% url 'datasets:list' org_slug=organization.slug %}">Back to datasets</a>
+</div>
+{% endblock %}

@@ -153,3 +153,6 @@ LOGIN_URL = 'accounts:login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@insightforge.ai'
+
+MAX_DATASET_UPLOAD_SIZE_MB = 50
+MAX_DATASET_UPLOAD_SIZE_BYTES = MAX_DATASET_UPLOAD_SIZE_MB * 1024 * 1024
