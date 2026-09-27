@@ -114,3 +114,11 @@ body {
     border-radius: 8px;
     border: none;
 }
+
+.org-card {
+    background: #ffffff;
+    border: 1px solid var(--brand-border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    height: 100%;
+}

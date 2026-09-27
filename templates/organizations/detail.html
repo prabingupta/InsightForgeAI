@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ organization.name }} | InsightForge AI{% endblock %}
+{% block content %}
+<div class="mt-4">
+    <h2>{{ organization.name }}</h2>
+    <p class="text-muted">Your role: <strong>{{ membership.get_role_display }}</strong></p>
+
+    <h4 class="mt-4">Members</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+                <tr>
+                    <td>{{ member.user.username }}</td>
+                    <td>{{ member.user.email }}</td>
+                    <td>{{ member.get_role_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if membership.role == 'owner' or membership.role == 'admin' %}
+        <h4 class="mt-4">Invite a member</h4>
+        <form method="post" action="{% url 'organizations:invite' slug=organization.slug %}" class="row g-2 align-items-end">
+            {% csrf_token %}
+            <div class="col-auto">
+                <label class="form-label">{{ invite_form.username.label }}</label>
+                {{ invite_form.username }}
+            </div>
+            <div class="col-auto">
+                <label class="form-label">{{ invite_form.role.label }}</label>
+                {{ invite_form.role }}
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Invite</button>
+            </div>
+        </form>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'organizations:list' %}">Back to organizations</a>
+    </div>
+</div>
+{% endblock %}
