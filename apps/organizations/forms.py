@@ -16,7 +16,12 @@ class OrganizationForm(forms.ModelForm):
 
 class InviteMemberForm(forms.Form):
     username = forms.CharField(max_length=150)
-    role = forms.ChoiceField(choices=Membership.Role.choices)
+    INVITABLE_ROLES = [
+        choice for choice in Membership.Role.choices
+        if choice[0] != Membership.Role.OWNER
+    ]
+
+    role = forms.ChoiceField(choices=INVITABLE_ROLES)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

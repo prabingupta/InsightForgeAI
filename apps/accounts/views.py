@@ -18,7 +18,7 @@ class StyledAuthenticationForm(AuthenticationForm):
 class RegisterView(CreateView):
     form_class = RegistrationForm
     template_name = 'accounts/register.html'
-    success_url = reverse_lazy('accounts:login')
+    success_url = reverse_lazy('organizations:list')
 
     def form_valid(self, form):
         response = super().form_valid(form)
