@@ -46,6 +46,9 @@
         <p class="text-muted small">Duplicate rows detected: {{ dataset.detected_schema.duplicate_row_count }}</p>
     {% endif %}
 
+    {% if dataset.processing_status == 'completed' %}
+        <a href="{% url 'analytics:dataset_analytics' org_slug=organization.slug pk=dataset.pk %}" class="btn btn-primary mb-3">View Analytics</a><br>
+    {% endif %}
     <a href="{% url 'datasets:list' org_slug=organization.slug %}">Back to datasets</a>
 </div>
 {% endblock %}

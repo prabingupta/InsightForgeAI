@@ -39,6 +39,8 @@ class DatasetUploadView(LoginRequiredMixin, CreateView):
     template_name = 'datasets/upload.html'
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         self.organization = get_object_or_404(Organization, slug=self.kwargs['org_slug'])
         require_role(
             request.user,

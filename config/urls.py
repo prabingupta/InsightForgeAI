@@ -24,6 +24,7 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     path('organizations/', include('apps.organizations.urls')),
     path('organizations/', include('apps.datasets.urls')),
+    path('organizations/', include('apps.analytics.urls')),
 ]
 
 if settings.DEBUG:

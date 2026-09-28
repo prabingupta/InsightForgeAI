@@ -9,7 +9,7 @@ def process_dataset(dataset: Dataset) -> None:
     dataset.save(update_fields=['processing_status'])
 
     try:
-        dataframe = _read_dataframe(dataset)
+        dataframe = read_dataset_dataframe(dataset)
         _apply_profile(dataset, dataframe)
         dataset.processing_status = Dataset.ProcessingStatus.COMPLETED
         dataset.validation_status = Dataset.ValidationStatus.VALID
@@ -23,7 +23,7 @@ def process_dataset(dataset: Dataset) -> None:
     dataset.save()
 
 
-def _read_dataframe(dataset: Dataset) -> pd.DataFrame:
+def read_dataset_dataframe(dataset: Dataset) -> pd.DataFrame:
     dataset.file.seek(0)
     filename = dataset.original_filename.lower()
 
