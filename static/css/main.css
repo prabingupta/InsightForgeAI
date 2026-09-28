@@ -76,6 +76,9 @@ body {
     border-radius: 8px;
     padding: 0.6rem 1rem;
     font-weight: 600;
+}
+
+.auth-card .btn-primary {
     width: 100%;
 }
 
