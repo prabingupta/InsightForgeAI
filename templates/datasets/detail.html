@@ -29,6 +29,7 @@
                     <th>Column</th>
                     <th>Type</th>
                     <th>Missing</th>
+                    <th>Invalid</th>
                     <th>Unique values</th>
                 </tr>
             </thead>
@@ -38,12 +39,16 @@
                         <td>{{ column.column }}</td>
                         <td>{{ column.dtype }}</td>
                         <td>{{ column.missing_count }} ({{ column.missing_percentage }}%)</td>
+                        <td>{% if column.invalid_count is not None %}{{ column.invalid_count }} ({{ column.invalid_percentage }}%){% else %}n/a{% endif %}</td>
                         <td>{{ column.unique_count }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <p class="text-muted small">Duplicate rows detected: {{ dataset.detected_schema.duplicate_row_count }}</p>
+        {% if dataset.detected_schema.invalid_cell_count is not None %}
+            <p class="text-muted small">Invalid cells detected: {{ dataset.detected_schema.invalid_cell_count }}. Invalid values are non-numeric entries in columns that are otherwise numeric.</p>
+        {% endif %}
     {% endif %}
 
     {% if dataset.processing_status == 'completed' %}

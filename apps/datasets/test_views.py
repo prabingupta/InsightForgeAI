@@ -103,3 +103,11 @@ class DatasetViewTests(TemporaryMediaTestCase):
             response = self.post_upload('data.csv', SAMPLE_CSV.encode())
         self.assertContains(response, 'too large')
         self.assertFalse(Dataset.objects.filter(name='Upload test').exists())
+
+    def test_upload_with_invalid_value_lowers_quality_score(self):
+        self.client.force_login(self.analyst)
+        content = b'revenue,name\n1,a\n2,b\n3,c\n4,d\n5,e\nx,f\n'
+        self.post_upload('data.csv', content)
+        dataset = Dataset.objects.get(name='Upload test')
+        self.assertEqual(dataset.data_quality_score, 91.67)
+        self.assertEqual(dataset.detected_schema['invalid_cell_count'], 1)
