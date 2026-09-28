@@ -108,3 +108,78 @@ class KPIEngineTests(SimpleTestCase):
     def test_negative_revenue_is_included_not_hidden(self):
         dataframe = pd.DataFrame({'revenue': [100.0, -30.0]})
         self.assertEqual(kpis_by_name(dataframe)['Total Revenue'].value, 70.0)
+
+
+class GrowthKPITests(SimpleTestCase):
+    def test_revenue_and_order_growth_between_two_months(self):
+        dataframe = pd.DataFrame({
+            'date': ['2026-01-05', '2026-01-20', '2026-02-10'],
+            'order_id': ['O1', 'O2', 'O3'],
+            'revenue': [100.0, 100.0, 300.0],
+        })
+        kpis = kpis_by_name(dataframe)
+        self.assertEqual(kpis['Revenue Growth'].value, 50.0)
+        self.assertEqual(kpis['Order Growth'].value, -50.0)
+        self.assertIn('2026-02 vs 2026-01', kpis['Revenue Growth'].note)
+
+    def test_single_month_gives_no_growth(self):
+        dataframe = pd.DataFrame({
+            'date': ['2026-01-05', '2026-01-20'], 'revenue': [100.0, 200.0],
+        })
+        growth = kpis_by_name(dataframe)['Revenue Growth']
+        self.assertIsNone(growth.value)
+        self.assertIn('two months', growth.note)
+
+    def test_non_adjacent_months_are_not_compared(self):
+        dataframe = pd.DataFrame({
+            'date': ['2026-01-05', '2026-03-05'], 'revenue': [100.0, 200.0],
+        })
+        growth = kpis_by_name(dataframe)['Revenue Growth']
+        self.assertIsNone(growth.value)
+        self.assertIn('consecutive', growth.note)
+
+    def test_zero_previous_month_revenue_gives_no_growth(self):
+        dataframe = pd.DataFrame({
+            'date': ['2026-01-05', '2026-02-05'], 'revenue': [0.0, 100.0],
+        })
+        growth = kpis_by_name(dataframe)['Revenue Growth']
+        self.assertIsNone(growth.value)
+        self.assertIn('zero', growth.note)
+
+    def test_invalid_dates_are_excluded_and_reported(self):
+        dataframe = pd.DataFrame({
+            'date': ['2026-01-05', 'not a date', '2026-02-10'],
+            'revenue': [100.0, 50.0, 300.0],
+        })
+        growth = kpis_by_name(dataframe)['Revenue Growth']
+        self.assertEqual(growth.value, 200.0)
+        self.assertIn('1 row(s)', growth.note)
+
+    def test_no_growth_kpis_without_date_column(self):
+        kpis = kpis_by_name(pd.DataFrame({'revenue': [1.0, 2.0]}))
+        self.assertNotIn('Revenue Growth', kpis)
+        self.assertNotIn('Order Growth', kpis)
+
+    def test_numeric_date_column_is_not_treated_as_dates(self):
+        dataframe = pd.DataFrame({'date': [1, 2], 'revenue': [10.0, 20.0]})
+        growth = kpis_by_name(dataframe)['Revenue Growth']
+        self.assertIsNone(growth.value)
+
+    def test_order_growth_requires_order_id(self):
+        dataframe = pd.DataFrame({
+            'date': ['2026-01-05', '2026-02-05'], 'revenue': [1.0, 2.0],
+        })
+        kpis = kpis_by_name(dataframe)
+        self.assertIn('Revenue Growth', kpis)
+        self.assertNotIn('Order Growth', kpis)
+
+
+class ProfitMarginConsistencyTests(SimpleTestCase):
+    def test_profit_margin_ignores_rows_with_invalid_revenue(self):
+        dataframe = pd.DataFrame({
+            'revenue': ['100', 'abc', '100'],
+            'profit': [10, 50, 10],
+        })
+        margin = kpis_by_name(dataframe)['Profit Margin']
+        self.assertEqual(margin.value, 10.0)
+        self.assertIn('1 row(s)', margin.note)
