@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
+from apps.analytics.breakdowns import compute_breakdowns
 from apps.analytics.kpi_engine import compute_kpis
 from apps.datasets.models import Dataset
 from apps.datasets.processing import read_dataset_dataframe
@@ -27,6 +28,7 @@ class DatasetAnalyticsView(LoginRequiredMixin, TemplateView):
         context['organization'] = organization
         context['dataset'] = dataset
         context['kpis'] = []
+        context['breakdowns'] = []
         context['error'] = ''
 
         if dataset.processing_status != Dataset.ProcessingStatus.COMPLETED:
@@ -36,6 +38,7 @@ class DatasetAnalyticsView(LoginRequiredMixin, TemplateView):
         try:
             dataframe = read_dataset_dataframe(dataset)
             context['kpis'] = compute_kpis(dataframe)
+            context['breakdowns'] = compute_breakdowns(dataframe)
         except Exception:
             logger.exception('KPI computation failed for dataset %s', dataset.pk)
             context['error'] = 'Analytics could not be generated for this dataset.'

@@ -64,7 +64,7 @@ def _total_revenue(dataframe: pd.DataFrame, mapping: dict) -> KPIResult:
     values = _safe_numeric(dataframe[column])
     total = values.sum(skipna=True)
     invalid_count = int(values.isna().sum())
-    note = f'{invalid_count} non-numeric values ignored.' if invalid_count else ''
+    note = f'{invalid_count} non-numeric value(s) ignored.' if invalid_count else ''
     return KPIResult(
         name='Total Revenue', value=round(float(total), 2), unit='currency',
         source_columns=[column], note=note,
@@ -77,9 +77,15 @@ def _average_order_value(dataframe: pd.DataFrame, mapping: dict) -> KPIResult:
     if len(values) == 0:
         return KPIResult(name='Average Order Value', value=None, unit='currency',
                           source_columns=[column], note='No valid revenue values found.')
+    excluded = len(dataframe) - len(values)
+    note = (
+        f'Averaged over {len(values)} of {len(dataframe)} rows; '
+        'rows without a valid revenue value were excluded.'
+        if excluded else ''
+    )
     return KPIResult(
         name='Average Order Value', value=round(float(values.mean()), 2), unit='currency',
-        source_columns=[column],
+        source_columns=[column], note=note,
     )
 
 
@@ -170,7 +176,7 @@ def _top_region(dataframe: pd.DataFrame, mapping: dict) -> KPIResult:
     )
 
 
-def _parse_dates(dataframe: pd.DataFrame, mapping: dict) -> tuple[pd.Series, int]:
+def parse_dates(dataframe: pd.DataFrame, mapping: dict) -> tuple[pd.Series, int]:
     column = dataframe[mapping['date']]
     if pd.api.types.is_numeric_dtype(column):
         parsed = pd.Series(pd.NaT, index=dataframe.index, dtype='datetime64[ns]')
@@ -180,7 +186,7 @@ def _parse_dates(dataframe: pd.DataFrame, mapping: dict) -> tuple[pd.Series, int
 
 
 def _revenue_growth(dataframe: pd.DataFrame, mapping: dict) -> KPIResult:
-    dates, invalid_dates = _parse_dates(dataframe, mapping)
+    dates, invalid_dates = parse_dates(dataframe, mapping)
     valid = dates.notna()
     revenue = _safe_numeric(dataframe[mapping['revenue']])
     monthly = revenue[valid].groupby(dates[valid].dt.to_period('M')).sum().sort_index()
@@ -190,7 +196,7 @@ def _revenue_growth(dataframe: pd.DataFrame, mapping: dict) -> KPIResult:
 
 
 def _order_growth(dataframe: pd.DataFrame, mapping: dict) -> KPIResult:
-    dates, invalid_dates = _parse_dates(dataframe, mapping)
+    dates, invalid_dates = parse_dates(dataframe, mapping)
     valid = dates.notna()
     orders = dataframe.loc[valid, mapping['order_id']]
     monthly = orders.groupby(dates[valid].dt.to_period('M')).nunique().sort_index()

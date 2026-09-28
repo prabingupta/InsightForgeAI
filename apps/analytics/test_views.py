@@ -63,3 +63,18 @@ class DatasetAnalyticsAccessTests(TemporaryMediaTestCase):
         self.client.force_login(self.owner_a)
         response = self.client.get(self.analytics_url('does-not-exist', 1))
         self.assertEqual(response.status_code, 404)
+
+
+class DatasetAnalyticsBreakdownTests(TemporaryMediaTestCase):
+    def test_breakdown_section_is_shown_for_member(self):
+        owner = create_user('owner_a')
+        organization = create_organization('Acme', owner)
+        dataset = create_dataset(
+            organization, owner, content='product,revenue\nA,100\nB,200\n'
+        )
+        self.client.force_login(owner)
+        response = self.client.get(reverse(
+            'analytics:dataset_analytics',
+            kwargs={'org_slug': 'acme', 'pk': dataset.pk},
+        ))
+        self.assertContains(response, 'Revenue by Product')

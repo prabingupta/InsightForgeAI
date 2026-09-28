@@ -183,3 +183,19 @@ class ProfitMarginConsistencyTests(SimpleTestCase):
         margin = kpis_by_name(dataframe)['Profit Margin']
         self.assertEqual(margin.value, 10.0)
         self.assertIn('1 row(s)', margin.note)
+
+
+class AverageOrderValueNoteTests(SimpleTestCase):
+    def test_note_explains_excluded_rows(self):
+        dataframe = pd.DataFrame({'revenue': ['100', 'abc', '300']})
+        aov = kpis_by_name(dataframe)['Average Order Value']
+        self.assertEqual(aov.value, 200.0)
+        self.assertIn('2 of 3 rows', aov.note)
+
+    def test_no_note_when_all_rows_are_valid(self):
+        aov = kpis_by_name(pd.DataFrame({'revenue': [100.0, 300.0]}))['Average Order Value']
+        self.assertEqual(aov.note, '')
+
+    def test_non_numeric_note_wording(self):
+        revenue = kpis_by_name(pd.DataFrame({'revenue': ['100', 'abc']}))['Total Revenue']
+        self.assertIn('1 non-numeric value(s) ignored', revenue.note)
